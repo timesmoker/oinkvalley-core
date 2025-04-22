@@ -1,0 +1,4 @@
+# src/main/resources/application.yml
+jwt:
+  secret: dummyDUMMydumdudmududmduududududduududududu=
+  expiration: 9999999
