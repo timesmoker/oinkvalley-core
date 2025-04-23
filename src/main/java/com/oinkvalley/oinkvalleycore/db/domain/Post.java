@@ -26,7 +26,8 @@ public class Post {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @NotNull
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -46,7 +47,10 @@ public class Post {
 
     @NotNull
     @Column(name = "board_type", nullable = false, length = 30)
-    private String board_type;
+    private String boardType;
+
+    @Column(name = "author_name", nullable = false, length = 30)
+    private String authorName;
 
     @ColumnDefault("now()")
     @Column(name = "updated_at")
