@@ -1,0 +1,14 @@
+package com.oinkvalley.oinkvalleycore.db.repository;
+
+import com.oinkvalley.oinkvalleycore.db.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    // email로 유저 조회
+    Optional<User> findByEmail(String email);
+
+    void deleteByEmail(String mail);
+}
