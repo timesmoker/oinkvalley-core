@@ -1,5 +1,7 @@
 package com.oinkvalley.oinkvalleycore.config;
 
+import com.oinkvalley.oinkvalleycore.db.domain.User;
+import com.oinkvalley.oinkvalleycore.db.repository.PostRepository;
 import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
 import com.oinkvalley.oinkvalleycore.security.JwtAuthenticationFilter;
 import com.oinkvalley.oinkvalleycore.security.JwtUtil;
@@ -11,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 @EnableMethodSecurity
 @Configuration
@@ -42,3 +45,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
+
+

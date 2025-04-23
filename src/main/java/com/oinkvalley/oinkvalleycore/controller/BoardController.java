@@ -6,6 +6,7 @@ import com.oinkvalley.oinkvalleycore.db.repository.PostRepository;
 import com.oinkvalley.oinkvalleycore.dto.PostRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -61,6 +62,31 @@ public class BoardController {
         List<Post> posts = postRepository.findPostsByBoardType(boardType, lastPostId, pageable);
         return ResponseEntity.ok(posts);
     }
+
+    @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isPostOwner(#id, principal)")
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+        postRepository.deleteById(id);
+        return ResponseEntity.ok("게시글이 삭제되었습니다.");
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isPostOwner(#id, principal)")
+    @PutMapping("/posts/{id}")
+    public ResponseEntity<?> updatePost(
+            @PathVariable Long id,
+            @RequestBody PostRequest request
+    ) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setUpdatedAt(Instant.now());
+        postRepository.save(post);
+
+        return ResponseEntity.ok("게시글이 수정되었습니다.");
+    }
+
 
 
 }
