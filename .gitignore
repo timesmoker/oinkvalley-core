@@ -38,3 +38,4 @@ out/
 
 ### Secret files ###
 /src/main/resources/application.yml
+/src/main/java/com/oinkvalley/oinkvalleycore/controller/TestController.java

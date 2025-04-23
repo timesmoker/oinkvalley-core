@@ -1,5 +1,7 @@
 package com.oinkvalley.oinkvalleycore.security;
 
+import com.oinkvalley.oinkvalleycore.db.domain.User;
+import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +18,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -38,10 +42,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userId = jwtUtil.getUserIdFromToken(token);
                 List<String> roles = jwtUtil.getRolesFromToken(token);
 
-                // 3. 스프링 시큐리티 인증 객체 생성
+                // DB에서 User 조회!
+                User user = userRepository.findById(Long.valueOf(userId))
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                // 인증 객체 생성 (principal에 User 넣기)
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userId, null,
-                                roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)) .toList());
+                        new UsernamePasswordAuthenticationToken(user, null,
+                                roles.stream()
+                                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                                        .toList());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
