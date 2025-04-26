@@ -1,0 +1,17 @@
+# 빌드 아웃풋
+.gradle
+
+# 환경 설정 파일
+*.env
+
+# IDE 관련
+.idea
+*.iml
+
+# OS 관련
+.DS_Store
+
+# Git 관련
+.git
+.gitignore
+
