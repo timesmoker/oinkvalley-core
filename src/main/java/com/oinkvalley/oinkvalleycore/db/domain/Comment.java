@@ -21,9 +21,18 @@ public class Comment {
     @Id
     @ColumnDefault("nextval('oinkvalley_local_dev_schema.comments_id_seq')")
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @NotNull
+    @Column(name = "author_name", nullable = false, length = 30)
+    private String authorName;
+
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "post_id")
     private Post post;

@@ -24,9 +24,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ColumnDefault("nextval('oinkvalley_local_dev_schema.posts_id_seq')")
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "user_id")
     private User user;
@@ -49,6 +49,7 @@ public class Post {
     @Column(name = "board_type", nullable = false, length = 30)
     private String boardType;
 
+    @NotNull
     @Column(name = "author_name", nullable = false, length = 30)
     private String authorName;
 

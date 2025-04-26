@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 public class OwnershipSecurity {
 
     private final PostRepository postRepository;
-    //private final CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 
     public OwnershipSecurity(PostRepository postRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
-        //this.commentRepository = commentRepository;
+        this.commentRepository = commentRepository;
     }
 
     public boolean isPostOwner(Long postId, User user) {
@@ -21,10 +21,10 @@ public class OwnershipSecurity {
                 .map(post -> post.getUser().getId().equals(user.getId()))
                 .orElse(false);
     }
-    /*
+
     public boolean isCommentOwner(Long commentId, User user) {
         return commentRepository.findById(commentId)
                 .map(comment -> comment.getUser().getId().equals(user.getId()))
                 .orElse(false);
-    }*/
+    }
 }
