@@ -1,0 +1,23 @@
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:2592000}
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: ${SPRING_HIBERNATE_FORMAT_SQL:true}
+        default_schema: ${SPRING_HIBERNATE_DEFAULT_SCHEMA}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
