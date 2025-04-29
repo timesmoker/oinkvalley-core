@@ -13,8 +13,8 @@ spring:
     show-sql: ${SPRING_JPA_SHOW_SQL:true}
     properties:
       hibernate:
-        format_sql: ${SPRING_HIBERNATE_FORMAT_SQL:true}
-        default_schema: ${SPRING_HIBERNATE_DEFAULT_SCHEMA}
+        format_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL:true}
+        default_schema: ${SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA:oinkvalley_core}
 
 management:
   endpoints:
