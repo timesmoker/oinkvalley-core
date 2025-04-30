@@ -17,12 +17,12 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "posts", schema = "oinkvalley_local_dev_schema")
+@Table(name = "posts")
 
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('oinkvalley_local_dev_schema.posts_id_seq')")
+    @ColumnDefault("nextval('posts_id_seq')")
     @Column(name = "id", nullable = false)
     private Long id;
 

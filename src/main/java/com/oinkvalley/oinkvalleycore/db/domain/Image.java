@@ -13,10 +13,10 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "images", schema = "oinkvalley_local_dev_schema")
+@Table(name = "images")
 public class Image {
     @Id
-    @ColumnDefault("nextval('oinkvalley_local_dev_schema.images_id_seq')")
+    @ColumnDefault("nextval('images_id_seq')")
     @Column(name = "id", nullable = false)
     private Integer id;
 

@@ -16,10 +16,10 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
-@Table(name = "comments", schema = "oinkvalley_local_dev_schema")
+@Table(name = "comments")
 public class Comment {
     @Id
-    @ColumnDefault("nextval('oinkvalley_local_dev_schema.comments_id_seq')")
+    @ColumnDefault("nextval('comments_id_seq')")
     @Column(name = "id", nullable = false)
     private Long id;
 
