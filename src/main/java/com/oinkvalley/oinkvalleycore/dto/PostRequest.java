@@ -11,10 +11,10 @@ import java.util.Map;
 @Setter
 public class PostRequest {
 
-    @NotBlank  // 제목
+    @NotBlank
     private String title;
 
-    @NotNull  // content는 JSON 형태로!
+    @NotNull
     private Map<String, Object> content;
 
 }

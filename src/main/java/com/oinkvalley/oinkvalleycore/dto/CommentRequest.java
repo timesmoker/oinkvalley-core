@@ -10,10 +10,10 @@ import java.util.Map;
 @Setter
 public class CommentRequest {
 
-    @NotNull  // 게시글 ID
+    @NotNull
     private Long postId;
 
-    @NotNull  // 내용물
+    @NotNull
     private Map<String, Object> content;
 
 }

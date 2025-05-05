@@ -17,7 +17,7 @@ public class PostDetailResponse {
     private String authorName;
     private Instant createdAt;
     private Instant updatedAt;
-    private Page<CommentResponse> latestComments; // 최신 10개
+    private Page<CommentResponse> latestComments;
     private List<ImageResponse> images;
 }
 

@@ -12,5 +12,5 @@ public class PostSummaryResponse {
     private String title;
     private String authorName;
     private Instant createdAt;
-    private Long commentCount;  // ← 여긴 Long으로 맞춰줘야 해!
+    private Long commentCount;
 }
