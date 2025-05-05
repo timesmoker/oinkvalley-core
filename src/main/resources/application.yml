@@ -21,3 +21,12 @@ management:
     web:
       exposure:
         include: "*"
+
+logging:
+  level:
+    root: INFO                          # 전체 로그 기본 수준
+    org.springframework.web: DEBUG     # 웹 요청 처리 흐름 (요청 URL, 핸들러 매핑 등)
+    org.springframework.security: DEBUG # Spring Security 흐름 로그
+    org.hibernate.SQL: DEBUG           # JPA가 실행하는 SQL 쿼리
+    org.hibernate.type.descriptor.sql: TRACE  # SQL 파라미터 바인딩 값 확인 (엄청 자세함)
+    com.oinkvalley: DEBUG              # 네 프로젝트 패키지 전체 (클래스별로도 가능)
