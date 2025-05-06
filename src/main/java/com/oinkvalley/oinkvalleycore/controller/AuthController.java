@@ -2,7 +2,9 @@ package com.oinkvalley.oinkvalleycore.controller;
 
 import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
+import com.oinkvalley.oinkvalleycore.dto.ErrorResponse;
 import com.oinkvalley.oinkvalleycore.dto.LoginRequest;
+import com.oinkvalley.oinkvalleycore.dto.LoginResponse;
 import com.oinkvalley.oinkvalleycore.security.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,16 +42,24 @@ public class AuthController {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 비밀번호 체크 (passwordEncoder 사용)
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse("Invalid password"));
         }
 
         // JWT 발급
         String token = jwtUtil.generateToken(user.getId().toString(), user.getRoles());
 
-        return ResponseEntity.ok(token);
+
+        return ResponseEntity.ok(new LoginResponse(
+                token,
+                user.getId(),
+                user.getEmail(),
+                user.getRoles()
+        ));
     }
+
 
     @PostMapping("/grant-admin/{userId}")
     public ResponseEntity<?> grantAdminRole(@PathVariable Long userId) {
