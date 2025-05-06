@@ -9,12 +9,14 @@ import com.oinkvalley.oinkvalleycore.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -29,7 +31,7 @@ public class BoardController {
     }
 
     // 게시글 작성
-    @PostMapping("/{boardType}/posts")
+    @PostMapping(value = "/{boardType}/posts", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPost(
             @PathVariable String boardType,
@@ -47,7 +49,7 @@ public class BoardController {
 
         postRepository.save(post);
 
-        return ResponseEntity.ok("Post created in board: " + boardType);
+        return ResponseEntity.ok(Map.of("message", "Post created in board: " + boardType)); // ✅ JSON 응답
     }
 
     // 게시판 요약 정보 조회 --> 게시글 목록
