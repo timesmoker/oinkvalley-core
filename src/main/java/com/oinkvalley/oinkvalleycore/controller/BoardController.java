@@ -94,7 +94,7 @@ public class BoardController {
 
     // 게시글 수정
     @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isPostOwner(#postId, principal)")
-    @PutMapping("/posts/{postId}")
+    @PutMapping("/{boardType}/posts/{postId}")
     public ResponseEntity<?> updatePost(
             @PathVariable Long postId,
             @RequestBody PostRequest request
@@ -112,14 +112,14 @@ public class BoardController {
 
     // 게시글 삭제
     @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isPostOwner(#postId, principal)")
-    @DeleteMapping("/posts/{postId}")
+    @DeleteMapping("/{boardType}/posts/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId) {
         postRepository.deleteById(postId);
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
     // 댓글 작성
-    @PostMapping("/posts/{postId}/comments")
+    @PostMapping("/{boardType}/posts/{postId}/comments")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createComment(
             @PathVariable Long postId,
@@ -143,7 +143,7 @@ public class BoardController {
 
 
     // 댓글 조회
-    @GetMapping("/posts/{postId}/comments")
+    @GetMapping("/{boardType}/posts/{postId}/comments")
     public ResponseEntity<?> getComments(
             @PathVariable Long postId,
             @RequestParam(defaultValue = "1") int page,
@@ -156,7 +156,7 @@ public class BoardController {
 
     // 댓글 수정
     @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isCommentOwner(#commentId, principal)")
-    @PutMapping("/posts/{postId}/comments/{commentId}")
+    @PutMapping("/{boardType}/posts/{postId}/comments/{commentId}")
     public ResponseEntity<?> updateComment(
             @PathVariable Long commentId,
             @RequestBody CommentRequest request
@@ -174,7 +174,7 @@ public class BoardController {
 
     // 댓글 삭제
     @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isCommentOwner(#commentId, principal)")
-    @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    @DeleteMapping("/{boardType}/posts/{postId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
         commentRepository.deleteById(commentId);
         return ResponseEntity.ok("댓글이 삭제되었습니다.");
