@@ -13,7 +13,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentResponse {
-    private Long postId;
     private Long id;
     private String authorName;
     private Map<String, Object> content;

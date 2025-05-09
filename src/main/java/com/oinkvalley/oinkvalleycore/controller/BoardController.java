@@ -71,10 +71,6 @@ public class BoardController {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // 댓글수 기본 30개
-        int page = 0;
-        int size = 30;
-
         // Post → DTO 변환
         PostDetailResponse response = new PostDetailResponse();
         response.setId(post.getId());
@@ -83,11 +79,6 @@ public class BoardController {
         response.setAuthorName(post.getAuthorName());
         response.setCreatedAt(post.getCreatedAt());
         response.setUpdatedAt(post.getUpdatedAt());
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<CommentResponse> comments = commentRepository.findCommentDtosByPostId(postId, pageable);
-
-        response.setLatestComments(comments);  // 댓글도 넣기
 
         return ResponseEntity.ok(response);
     }

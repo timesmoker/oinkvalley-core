@@ -19,6 +19,7 @@ import java.util.Map;
 @Table(name = "comments")
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ColumnDefault("nextval('comments_id_seq')")
     @Column(name = "id", nullable = false)
     private Long id;

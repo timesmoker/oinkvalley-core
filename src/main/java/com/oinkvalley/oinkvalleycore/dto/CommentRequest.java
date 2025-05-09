@@ -9,10 +9,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class CommentRequest {
-
-    @NotNull
-    private Long postId;
-
     @NotNull
     private Map<String, Object> content;
 
