@@ -1,13 +1,16 @@
 package com.oinkvalley.oinkvalleycore.dto;
 
+import lombok.Builder;
+
 import java.time.Instant;
 import java.util.Map;
 
+@Builder
 public record PostDetailResponse(
         Long id,
         String title,
         Map<String, Object> content,
-        String authorName,
+        String username,
         Instant createdAt,
         Instant updatedAt
 ) {}

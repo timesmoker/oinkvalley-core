@@ -6,9 +6,12 @@ import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.CommentRepository;
 import com.oinkvalley.oinkvalleycore.db.repository.PostRepository;
 import com.oinkvalley.oinkvalleycore.dto.*;
+import com.oinkvalley.oinkvalleycore.dto.projection.PostBaseProjection;
+import com.oinkvalley.oinkvalleycore.dto.projection.PostCommentCountProjection;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -18,7 +21,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,14 +41,14 @@ public class BoardController {
             @Valid @RequestBody PostRequest request,
             @AuthenticationPrincipal User user) {
 
-        Post post = new Post();
-        post.setTitle(request.title());
-        post.setContent(request.content());
-        post.setBoardType(boardType);
-        post.setUser(user);
-        post.setAuthorName(user.getUsername());
-        post.setCreatedAt(Instant.now());
-        post.setUpdatedAt(Instant.now());
+        Post post = Post.builder()
+                .title(request.title())
+                .content(request.content())
+                .boardType(boardType)
+                .user(user)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
 
         postRepository.save(post);
 
@@ -58,8 +63,30 @@ public class BoardController {
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<PostSummaryResponse> postSummaries = postRepository.findPostSummaries(boardType, pageable);
-        return ResponseEntity.ok(postSummaries);
+        Page<PostBaseProjection> basePage = postRepository.findPostBaseList(boardType, pageable);
+
+        List<Long> postIds = basePage.getContent().stream()
+                .map(PostBaseProjection::getId)
+                .toList();
+
+        Map<Long, Long> commentCountMap = postRepository.countCommentsByPostIds(postIds).stream()
+                .collect(Collectors.toMap(
+                        PostCommentCountProjection::getPostId,
+                        PostCommentCountProjection::getCommentCount
+                ));
+
+        List<PostSummaryResponse> dtoList = basePage.getContent().stream()
+                .map(base -> PostSummaryResponse.builder()
+                        .id(base.getId())
+                        .title(base.getTitle())
+                        .username(base.getUsername())
+                        .createdAt(base.getCreatedAt())
+                        .commentCount(commentCountMap.getOrDefault(base.getId(), 0L))
+                        .build()
+                ).toList();
+
+        Page<PostSummaryResponse> resultPage = new PageImpl<>(dtoList, pageable, basePage.getTotalElements());
+        return ResponseEntity.ok(resultPage);
     }
 
     // 게시글 상세 조회
@@ -117,13 +144,13 @@ public class BoardController {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        Comment comment = new Comment();
-        comment.setContent(request.content());
-        comment.setUser(user);
-        comment.setPost(post);
-        comment.setAuthorName(user.getUsername());
-        comment.setCreatedAt(Instant.now());
-        comment.setUpdatedAt(Instant.now());
+        Comment comment = Comment.builder()
+                .content(request.content())
+                .user(user)
+                .post(post)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
 
         commentRepository.save(comment);
         return ResponseEntity.ok("댓글이 작성되었습니다.");

@@ -2,9 +2,9 @@ package com.oinkvalley.oinkvalleycore.db.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -12,8 +12,11 @@ import java.util.ArrayList;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
-@NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
@@ -21,16 +24,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Email
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @NotBlank
+    @Column(nullable = false, unique = true)
     private String username;
 
+    @NotBlank
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column
     private String provider;
 
+    @Column(name = "provider_id")
     private String providerId;
 
-    @ElementCollection(fetch = FetchType.EAGER)  // 권한 테이블에서 가져오기
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "roles")
     private List<String> roles = new ArrayList<>();
 }

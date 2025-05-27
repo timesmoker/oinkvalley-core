@@ -3,8 +3,7 @@ package com.oinkvalley.oinkvalleycore.db.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -17,6 +16,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Table(name = "posts")
 
 public class Post {
@@ -49,18 +51,10 @@ public class Post {
     @Column(name = "board_type", nullable = false, length = 30)
     private String boardType;
 
-    @NotNull
-    @Column(name = "author_name", nullable = false, length = 30)
-    private String authorName;
-
     @ColumnDefault("now()")
     @Column(name = "updated_at")
     private Instant updatedAt;
 
     @OneToMany(mappedBy = "post")
     private Set<Comment> comments = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "post")
-    private Set<Image> images = new LinkedHashSet<>();
-
 }

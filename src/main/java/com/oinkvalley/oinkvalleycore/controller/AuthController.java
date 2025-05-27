@@ -34,14 +34,15 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignUpRequest request) {
-        User user = new User();
-        user.setEmail(request.email());
-        user.setPasswordHash(passwordEncoder.encode(request.password()));
-        user.setRoles(
-                (request.roles() == null || request.roles().isEmpty()) ?
-                        List.of("USER") :
-                        request.roles()
-        );
+        User user = User.builder()
+                .email(request.email())
+                .passwordHash(passwordEncoder.encode(request.password()))
+                .roles(
+                        (request.roles() == null || request.roles().isEmpty()) ?
+                                List.of("USER") : request.roles()
+                )
+                .build();
+
         userRepository.save(user);
         return ResponseEntity.ok("Signup successful!");
     }
@@ -51,7 +52,7 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
-        User user = userRepository.findByEmail(request.email())
+        User user = userRepository.findByEmailWithRoles(request.email())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {

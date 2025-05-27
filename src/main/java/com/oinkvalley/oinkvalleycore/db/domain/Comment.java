@@ -2,8 +2,7 @@ package com.oinkvalley.oinkvalleycore.db.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
@@ -16,6 +15,9 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Table(name = "comments")
 public class Comment {
     @Id
@@ -30,10 +32,7 @@ public class Comment {
     private User user;
 
     @NotNull
-    @Column(name = "author_name", nullable = false, length = 30)
-    private String authorName;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "post_id")
     private Post post;

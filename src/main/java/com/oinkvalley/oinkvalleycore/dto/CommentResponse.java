@@ -10,7 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class CommentResponse {
     private Long id;
-    private String authorName;
+    private String username;
     private Map<String, Object> content;
     private Instant createdAt;
 }
