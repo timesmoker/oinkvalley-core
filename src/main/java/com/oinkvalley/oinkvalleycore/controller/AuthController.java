@@ -1,23 +1,16 @@
 package com.oinkvalley.oinkvalleycore.controller;
 
 import com.oinkvalley.oinkvalleycore.services.AuthService;
-import com.oinkvalley.oinkvalleycore.db.domain.User;
-import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
 import com.oinkvalley.oinkvalleycore.dto.ErrorResponse;
-import com.oinkvalley.oinkvalleycore.dto.LoginRequest;
-import com.oinkvalley.oinkvalleycore.dto.SignUpRequest;
-import com.oinkvalley.oinkvalleycore.security.JwtUtil;
+import com.oinkvalley.oinkvalleycore.dto.auth.LoginRequest;
+import com.oinkvalley.oinkvalleycore.dto.auth.SignUpRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

@@ -5,10 +5,11 @@ import com.oinkvalley.oinkvalleycore.db.domain.Post;
 import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.CommentRepository;
 import com.oinkvalley.oinkvalleycore.db.repository.PostRepository;
-import com.oinkvalley.oinkvalleycore.dto.*;
-import com.oinkvalley.oinkvalleycore.dto.projection.PostBaseProjection;
-import com.oinkvalley.oinkvalleycore.dto.projection.PostCommentCountProjection;
+import com.oinkvalley.oinkvalleycore.dto.board.*;
+import com.oinkvalley.oinkvalleycore.dto.board.projection.PostBaseProjection;
+import com.oinkvalley.oinkvalleycore.dto.board.projection.PostCommentCountProjection;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,12 +24,27 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class PostService {
+public class BoardService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    public Page<PostSummaryResponse> getPostSummaries(String boardType, Pageable pageable) {
+
+    @Transactional
+    public void createPost(String boardType, PostCreateRequest request, User user) {
+        Post post = Post.builder()
+                .title(request.title())
+                .content(request.content())
+                .boardType(boardType)
+                .user(user)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        postRepository.save(post);
+    }
+
+    public Page<PostListResponse> getPostSummaries(String boardType, Pageable pageable) {
         Page<PostBaseProjection> basePage = postRepository.findPostBaseList(boardType, pageable);
 
         List<Long> postIds = basePage.getContent().stream()
@@ -41,8 +57,8 @@ public class PostService {
                         PostCommentCountProjection::getCommentCount
                 ));
 
-        List<PostSummaryResponse> dtoList = basePage.getContent().stream()
-                .map(base -> PostSummaryResponse.builder()
+        List<PostListResponse> dtoList = basePage.getContent().stream()
+                .map(base -> PostListResponse.builder()
                         .id(base.getId())
                         .title(base.getTitle())
                         .username(base.getUsername())
@@ -69,13 +85,11 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long postId, PostRequest request) {
+    public void updatePost(Long postId, @Valid PostUpdateRequest request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        post.setTitle(request.title());
-        post.setContent(request.content());
-        post.setUpdatedAt(Instant.now());
+        post.update(request.title(),request.content());
     }
 
     @Transactional
@@ -84,21 +98,7 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(String boardType, PostRequest request, User user) {
-        Post post = Post.builder()
-                .title(request.title())
-                .content(request.content())
-                .boardType(boardType)
-                .user(user)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-
-        postRepository.save(post);
-    }
-
-    @Transactional
-    public void createComment(Long postId, CommentRequest request, User user) {
+    public void createComment(Long postId, CommentCreateRequest request, User user) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -118,12 +118,11 @@ public class PostService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, CommentRequest request) {
+    public void updateComment(Long commentId, @Valid CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        comment.setContent(request.content());
-        comment.setUpdatedAt(Instant.now());
+        comment.update(request.content());
     }
 
     @Transactional

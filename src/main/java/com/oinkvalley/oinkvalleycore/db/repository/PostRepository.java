@@ -1,8 +1,8 @@
 package com.oinkvalley.oinkvalleycore.db.repository;
 
 import com.oinkvalley.oinkvalleycore.db.domain.Post;
-import com.oinkvalley.oinkvalleycore.dto.projection.PostBaseProjection;
-import com.oinkvalley.oinkvalleycore.dto.projection.PostCommentCountProjection;
+import com.oinkvalley.oinkvalleycore.dto.board.projection.PostBaseProjection;
+import com.oinkvalley.oinkvalleycore.dto.board.projection.PostCommentCountProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

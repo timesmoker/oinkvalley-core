@@ -1,16 +1,18 @@
-package com.oinkvalley.oinkvalleycore.dto;
+package com.oinkvalley.oinkvalleycore.dto.board;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Instant;
-import java.util.Map;
 
 @Getter
+@Builder
 @AllArgsConstructor
-public class CommentResponse {
+public class PostListResponse {
     private Long id;
+    private String title;
     private String username;
-    private Map<String, Object> content;
     private Instant createdAt;
+    private Long commentCount;
 }

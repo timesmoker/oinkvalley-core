@@ -1,4 +1,4 @@
-package com.oinkvalley.oinkvalleycore.dto;
+package com.oinkvalley.oinkvalleycore.dto.board;
 
 import lombok.Builder;
 

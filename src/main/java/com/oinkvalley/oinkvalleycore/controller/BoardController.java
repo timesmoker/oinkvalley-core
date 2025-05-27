@@ -1,8 +1,8 @@
 package com.oinkvalley.oinkvalleycore.controller;
 
 import com.oinkvalley.oinkvalleycore.db.domain.User;
-import com.oinkvalley.oinkvalleycore.dto.*;
-import com.oinkvalley.oinkvalleycore.services.PostService;
+import com.oinkvalley.oinkvalleycore.dto.board.*;
+import com.oinkvalley.oinkvalleycore.services.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/boards")
 public class BoardController {
 
-    private final PostService postService;
+    private final BoardService boardService;
 
     // 게시글 작성
     @PostMapping(value = "/{boardType}/posts", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPost(
             @PathVariable String boardType,
-            @Valid @RequestBody PostRequest request,
+            @Valid @RequestBody PostCreateRequest request,
             @AuthenticationPrincipal User user) {
-        postService.createPost(boardType, request, user);
+        boardService.createPost(boardType, request, user);
         return ResponseEntity.ok().body("게시글이 작성되었습니다.");
     }
 
@@ -40,7 +40,7 @@ public class BoardController {
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<PostSummaryResponse> postSummaries = postService.getPostSummaries(boardType, pageable);
+        Page<PostListResponse> postSummaries = boardService.getPostSummaries(boardType, pageable);
         return ResponseEntity.ok(postSummaries);
     }
 
@@ -50,7 +50,7 @@ public class BoardController {
             @PathVariable String boardType,
             @PathVariable Long postId
     ) {
-        PostDetailResponse response = postService.getPostDetail(postId);
+        PostDetailResponse response = boardService.getPostDetail(postId);
         return ResponseEntity.ok(response);
     }
 
@@ -59,9 +59,9 @@ public class BoardController {
     @PutMapping("/{boardType}/posts/{postId}")
     public ResponseEntity<?> updatePost(
             @PathVariable Long postId,
-            @Valid @RequestBody PostRequest request
+            @Valid @RequestBody PostUpdateRequest request
     ) {
-        postService.updatePost(postId, request);
+        boardService.updatePost(postId, request);
         return ResponseEntity.ok("게시글이 수정되었습니다.");
     }
 
@@ -69,7 +69,7 @@ public class BoardController {
     @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isPostOwner(#postId, principal)")
     @DeleteMapping("/{boardType}/posts/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId) {
-        postService.deletePost(postId);
+        boardService.deletePost(postId);
         return ResponseEntity.ok("게시글이 삭제되었습니다.");
     }
 
@@ -78,10 +78,10 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createComment(
             @PathVariable Long postId,
-            @Valid @RequestBody CommentRequest request,
+            @Valid @RequestBody CommentCreateRequest request,
             @AuthenticationPrincipal User user
     ) {
-        postService.createComment(postId, request, user);
+        boardService.createComment(postId, request, user);
         return ResponseEntity.ok("댓글이 작성되었습니다.");
     }
 
@@ -93,7 +93,7 @@ public class BoardController {
             @RequestParam(defaultValue = "30") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<CommentResponse> comments = postService.getComments(postId, pageable);
+        Page<CommentResponse> comments = boardService.getComments(postId, pageable);
         return ResponseEntity.ok(comments);
     }
 
@@ -102,9 +102,9 @@ public class BoardController {
     @PutMapping("/{boardType}/posts/{postId}/comments/{commentId}")
     public ResponseEntity<?> updateComment(
             @PathVariable Long commentId,
-            @Valid @RequestBody CommentRequest request
+            @Valid @RequestBody CommentUpdateRequest request
     ) {
-        postService.updateComment(commentId, request);
+        boardService.updateComment(commentId, request);
         return ResponseEntity.ok("댓글이 수정되었습니다.");
     }
 
@@ -112,7 +112,7 @@ public class BoardController {
     @PreAuthorize("hasRole('ADMIN') or @ownershipSecurity.isCommentOwner(#commentId, principal)")
     @DeleteMapping("/{boardType}/posts/{postId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
-        postService.deleteComment(commentId);
+        boardService.deleteComment(commentId);
         return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
 }

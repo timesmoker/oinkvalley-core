@@ -1,4 +1,4 @@
-package com.oinkvalley.oinkvalleycore.dto;
+package com.oinkvalley.oinkvalleycore.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

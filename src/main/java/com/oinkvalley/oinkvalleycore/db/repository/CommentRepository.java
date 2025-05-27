@@ -1,7 +1,7 @@
 package com.oinkvalley.oinkvalleycore.db.repository;
 
 import com.oinkvalley.oinkvalleycore.db.domain.Comment;
-import com.oinkvalley.oinkvalleycore.dto.CommentResponse;
+import com.oinkvalley.oinkvalleycore.dto.board.CommentResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

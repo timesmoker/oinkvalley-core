@@ -13,9 +13,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Getter
-@Setter
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -43,18 +42,35 @@ public class Post {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> content;
 
-    @ColumnDefault("now()")
-    @Column(name = "created_at")
+
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     @NotNull
     @Column(name = "board_type", nullable = false, length = 30)
     private String boardType;
 
-    @ColumnDefault("now()")
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new LinkedHashSet<>();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
+    public void update(String title, Map<String, Object> content) {
+        this.title = title;
+        this.content = content;
+    }
+
 }

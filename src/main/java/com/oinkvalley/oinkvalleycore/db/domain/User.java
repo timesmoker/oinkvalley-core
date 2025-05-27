@@ -13,7 +13,6 @@ import java.util.ArrayList;
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -47,4 +46,12 @@ public class User {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "roles")
     private List<String> roles = new ArrayList<>();
+
+    public void updatePassword(String rawPasswordHash) {
+        this.passwordHash = rawPasswordHash;
+    }
+
+    public void changeUsername(String newUsername) {
+        this.username = newUsername;
+    }
 }
