@@ -29,24 +29,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+        String token = null;
 
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (token != null) {
             try {
-                // 1. 서명, 만료 체크
                 jwtUtil.validateToken(token);
 
-                // 2. 토큰에서 사용자 정보 꺼내기
                 String userId = jwtUtil.getUserIdFromToken(token);
                 List<String> roles = jwtUtil.getRolesFromToken(token);
 
-                // DB에서 User 조회!
+
                 User user = userRepository.findById(Long.valueOf(userId))
                         .orElseThrow(() -> new RuntimeException("User not found"));
 
-                // 인증 객체 생성 (principal에 User 넣기)
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(user, null,
                                 roles.stream()
@@ -55,7 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
-                // 토큰 에러 → 그냥 넘어가서 시큐리티가 401 처리
             }
         }
 
