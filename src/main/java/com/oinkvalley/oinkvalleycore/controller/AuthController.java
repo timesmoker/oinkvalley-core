@@ -4,10 +4,12 @@ import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
 import com.oinkvalley.oinkvalleycore.dto.ErrorResponse;
 import com.oinkvalley.oinkvalleycore.dto.LoginRequest;
-import com.oinkvalley.oinkvalleycore.dto.LoginResponse;
 import com.oinkvalley.oinkvalleycore.dto.SignUpRequest;
 import com.oinkvalley.oinkvalleycore.security.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    @Value("${DEV_MODE:false}")
+    private boolean devMode;
+    @Value("${jwt.expiration:2592000}")
+    private int jwtExpiration;
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
@@ -44,7 +51,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response
+    ) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -57,13 +67,14 @@ public class AuthController {
         // JWT 발급
         String token = jwtUtil.generateToken(user.getId().toString(), user.getRoles());
 
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(!devMode);  // default : true
+        cookie.setPath("/");
+        cookie.setMaxAge(jwtExpiration);
+        response.addCookie(cookie);
 
-        return ResponseEntity.ok(new LoginResponse(
-                token,
-                user.getId(),
-                user.getEmail(),
-                user.getRoles()
-        ));
+        return ResponseEntity.ok("Login successful");
     }
 
 }
