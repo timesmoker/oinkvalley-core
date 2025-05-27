@@ -7,6 +7,7 @@ import com.oinkvalley.oinkvalleycore.db.repository.CommentRepository;
 import com.oinkvalley.oinkvalleycore.db.repository.PostRepository;
 import com.oinkvalley.oinkvalleycore.dto.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,16 +21,12 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/boards")
 public class BoardController {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-
-    public BoardController(PostRepository postRepository, CommentRepository commentRepository) {
-        this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
-    }
 
     // 게시글 작성
     @PostMapping(value = "/{boardType}/posts", produces = MediaType.APPLICATION_JSON_VALUE)
