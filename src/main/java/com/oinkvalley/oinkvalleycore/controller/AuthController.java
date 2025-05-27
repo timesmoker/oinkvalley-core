@@ -1,5 +1,6 @@
 package com.oinkvalley.oinkvalleycore.controller;
 
+import com.oinkvalley.oinkvalleycore.services.AuthService;
 import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
 import com.oinkvalley.oinkvalleycore.dto.ErrorResponse;
@@ -23,27 +24,11 @@ import java.util.List;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Value("${DEV_MODE:false}")
-    private boolean devMode;
-    @Value("${jwt.expiration:2592000}")
-    private int jwtExpiration;
-
-    private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignUpRequest request) {
-        User user = User.builder()
-                .email(request.email())
-                .passwordHash(passwordEncoder.encode(request.password()))
-                .roles(
-                        (request.roles() == null || request.roles().isEmpty()) ?
-                                List.of("USER") : request.roles()
-                )
-                .build();
-
-        userRepository.save(user);
+        authService.signup(request);
         return ResponseEntity.ok("Signup successful!");
     }
 
@@ -52,26 +37,17 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
-        User user = userRepository.findByEmailWithRoles(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+        try {
+            String token = authService.login(request);
+            Cookie cookie = authService.buildAuthCookie(token);
+            response.addCookie(cookie);
+            return ResponseEntity.ok("Login successful");
+        } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new ErrorResponse("Invalid password"));
+                    .body(new ErrorResponse(e.getMessage()));
         }
-
-        // JWT 발급
-        String token = jwtUtil.generateToken(user.getId().toString(), user.getRoles());
-
-        Cookie cookie = new Cookie("token", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(!devMode);  // default : true
-        cookie.setPath("/");
-        cookie.setMaxAge(jwtExpiration);
-        response.addCookie(cookie);
-
-        return ResponseEntity.ok("Login successful");
     }
+
 
 }
