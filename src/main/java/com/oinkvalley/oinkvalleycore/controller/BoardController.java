@@ -6,6 +6,7 @@ import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.CommentRepository;
 import com.oinkvalley.oinkvalleycore.db.repository.PostRepository;
 import com.oinkvalley.oinkvalleycore.dto.*;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class BoardController {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    public BoardController(PostRepository postRepository,CommentRepository commentRepository ) {
+    public BoardController(PostRepository postRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
     }
@@ -35,12 +36,12 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createPost(
             @PathVariable String boardType,
-            @RequestBody PostRequest request,
-            @AuthenticationPrincipal User user)  {
+            @Valid @RequestBody PostRequest request,
+            @AuthenticationPrincipal User user) {
 
         Post post = new Post();
-        post.setTitle(request.getTitle());
-        post.setContent(request.getContent());
+        post.setTitle(request.title());
+        post.setContent(request.content());
         post.setBoardType(boardType);
         post.setUser(user);
         post.setAuthorName(user.getUsername());
@@ -49,7 +50,7 @@ public class BoardController {
 
         postRepository.save(post);
 
-        return ResponseEntity.ok(Map.of("message", "Post created in board: " + boardType)); // ✅ JSON 응답
+        return ResponseEntity.ok(Map.of("message", "Post created in board: " + boardType));
     }
 
     // 게시판 요약 정보 조회 --> 게시글 목록
@@ -64,23 +65,22 @@ public class BoardController {
         return ResponseEntity.ok(postSummaries);
     }
 
-
     // 게시글 상세 조회
     @GetMapping("/{boardType}/posts/{postId}")
     public ResponseEntity<?> getPostDetail(@PathVariable Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // Post → DTO 변환
-        PostDetailResponse response = new PostDetailResponse();
-        response.setId(post.getId());
-        response.setTitle(post.getTitle());
-        response.setContent(post.getContent());
-        response.setAuthorName(post.getAuthorName());
-        response.setCreatedAt(post.getCreatedAt());
-        response.setUpdatedAt(post.getUpdatedAt());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                new PostDetailResponse(
+                        post.getId(),
+                        post.getTitle(),
+                        post.getContent(),
+                        post.getAuthorName(),
+                        post.getCreatedAt(),
+                        post.getUpdatedAt()
+                )
+        );
     }
 
     // 게시글 수정
@@ -88,13 +88,13 @@ public class BoardController {
     @PutMapping("/{boardType}/posts/{postId}")
     public ResponseEntity<?> updatePost(
             @PathVariable Long postId,
-            @RequestBody PostRequest request
+            @Valid @RequestBody PostRequest request
     ) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        post.setTitle(request.getTitle());
-        post.setContent(request.getContent());
+        post.setTitle(request.title());
+        post.setContent(request.content());
         post.setUpdatedAt(Instant.now());
         postRepository.save(post);
 
@@ -114,14 +114,14 @@ public class BoardController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createComment(
             @PathVariable Long postId,
-            @RequestBody CommentRequest request,
+            @Valid @RequestBody CommentRequest request,
             @AuthenticationPrincipal User user
     ) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Comment comment = new Comment();
-        comment.setContent(request.getContent());
+        comment.setContent(request.content());
         comment.setUser(user);
         comment.setPost(post);
         comment.setAuthorName(user.getUsername());
@@ -150,12 +150,12 @@ public class BoardController {
     @PutMapping("/{boardType}/posts/{postId}/comments/{commentId}")
     public ResponseEntity<?> updateComment(
             @PathVariable Long commentId,
-            @RequestBody CommentRequest request
-    ){
+            @Valid @RequestBody CommentRequest request
+    ) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        comment.setContent(request.getContent());
+        comment.setContent(request.content());
         comment.setUpdatedAt(Instant.now());
         commentRepository.save(comment);
 
@@ -170,8 +170,5 @@ public class BoardController {
         commentRepository.deleteById(commentId);
         return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
-
-
-
-
 }
+
