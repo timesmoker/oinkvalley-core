@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/boards/**").permitAll() // 게시판 전체 공개
                         .anyRequest().authenticated()  // 그 외는 인증 필요!
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class)  // 🔥 JWT 필터 추가!
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -58,7 +58,7 @@ public class SecurityConfig {
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // ✅ 쿠키 전송 허용 핵심
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

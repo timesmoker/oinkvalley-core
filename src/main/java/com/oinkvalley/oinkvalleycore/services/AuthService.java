@@ -4,6 +4,7 @@ import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
 import com.oinkvalley.oinkvalleycore.dto.auth.LoginRequest;
 import com.oinkvalley.oinkvalleycore.dto.auth.SignUpRequest;
+import com.oinkvalley.oinkvalleycore.dto.auth.UserResponse;
 import com.oinkvalley.oinkvalleycore.security.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
@@ -59,4 +60,9 @@ public class AuthService {
         cookie.setMaxAge(jwtExpiration);
         return cookie;
     }
+
+    public UserResponse getCurrentUserInfo(User user) {
+        return new UserResponse(user.getEmail(), user.getUsername());
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.oinkvalley.oinkvalleycore.controller;
 
+import com.oinkvalley.oinkvalleycore.db.domain.User;
 import com.oinkvalley.oinkvalleycore.services.AuthService;
 import com.oinkvalley.oinkvalleycore.dto.ErrorResponse;
 import com.oinkvalley.oinkvalleycore.dto.auth.LoginRequest;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,5 +45,11 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> me(@AuthenticationPrincipal User user) {
+        System.out.println("User: " + user);
+        return ResponseEntity.ok(authService.getCurrentUserInfo(user));
+    }
 
 }
