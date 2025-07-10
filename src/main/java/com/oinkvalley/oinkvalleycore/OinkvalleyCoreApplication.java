@@ -19,6 +19,7 @@ public class OinkvalleyCoreApplication {
                     ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")));
         if (envLoggingEnabled) {
             System.out.println("📦 EnvLogger - 주입된 환경변수 확인");
+            System.out.println("IS DEVmod? :" + System.getenv("DEV_MODE"));
             System.out.println("✅ JWT_SECRET: " + System.getenv().getOrDefault("JWT_SECRET", "NOT_SET"));
             System.out.println("✅ DB URL: " + System.getenv().getOrDefault("SPRING_DATASOURCE_URL", "NOT_SET"));
             System.out.println("✅ DB Username: " + System.getenv().getOrDefault("SPRING_DATASOURCE_USERNAME", "NOT_SET"));
