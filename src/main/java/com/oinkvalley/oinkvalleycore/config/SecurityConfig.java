@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()  // 로그인, 회원가입은 열어두고
-                        .requestMatchers("/api/boards/**").permitAll() // 게시판 전체 공개
+                        .requestMatchers("/api/boards/public/**").permitAll() // 퍼블릭만 공개
                         .anyRequest().authenticated()  // 그 외는 인증 필요!
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class)
