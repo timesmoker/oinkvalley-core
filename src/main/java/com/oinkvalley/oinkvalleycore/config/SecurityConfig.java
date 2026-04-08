@@ -1,6 +1,7 @@
 package com.oinkvalley.oinkvalleycore.config;
 
 import com.oinkvalley.oinkvalleycore.db.repository.UserRepository;
+import com.oinkvalley.oinkvalleycore.security.PublicBoardGetRequestMatcher;
 import com.oinkvalley.oinkvalleycore.security.JwtAuthenticationFilter;
 import com.oinkvalley.oinkvalleycore.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +25,12 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final BoardConfig boardConfig;
 
-    public SecurityConfig(JwtUtil jwtUtil,UserRepository userRepository) {
+    public SecurityConfig(JwtUtil jwtUtil, UserRepository userRepository, BoardConfig boardConfig) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.boardConfig = boardConfig;
     }
 
     @Bean
@@ -37,7 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()  // 로그인, 회원가입은 열어두고
-                        .requestMatchers("/api/boards/public/**").permitAll() // 퍼블릭만 공개
+                        .requestMatchers(new PublicBoardGetRequestMatcher(boardConfig)).permitAll()
                         .anyRequest().authenticated()  // 그 외는 인증 필요!
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userRepository), UsernamePasswordAuthenticationFilter.class)

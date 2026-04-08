@@ -13,5 +13,8 @@ public record SignUpRequest(
         @NotBlank
         String password,
 
+        @NotBlank
+        String username,
+
         List<String> roles
 ) {}

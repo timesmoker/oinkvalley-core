@@ -60,6 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
+                System.out.println("Token validation failed: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
