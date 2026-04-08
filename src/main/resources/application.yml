@@ -30,3 +30,15 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
     com.oinkvalley: DEBUG
+
+board:
+  private-boards:
+    - office-of-architect
+    - bubble-pal
+    - zzang
+    - timesmoker
+    - nameko-zone
+    - coding-test
+  public-boards:
+    - boostcamp
+    

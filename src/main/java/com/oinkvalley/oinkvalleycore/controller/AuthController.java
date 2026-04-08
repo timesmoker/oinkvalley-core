@@ -5,11 +5,11 @@ import com.oinkvalley.oinkvalleycore.services.AuthService;
 import com.oinkvalley.oinkvalleycore.dto.ErrorResponse;
 import com.oinkvalley.oinkvalleycore.dto.auth.LoginRequest;
 import com.oinkvalley.oinkvalleycore.dto.auth.SignUpRequest;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,8 +35,7 @@ public class AuthController {
     ) {
         try {
             String token = authService.login(request);
-            Cookie cookie = authService.buildAuthCookie(token);
-            response.addCookie(cookie);
+            response.addHeader(HttpHeaders.SET_COOKIE, authService.buildAuthCookie(token).toString());
             return ResponseEntity.ok("Login successful");
         } catch (RuntimeException e) {
             return ResponseEntity

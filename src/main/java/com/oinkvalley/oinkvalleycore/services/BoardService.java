@@ -1,5 +1,6 @@
 package com.oinkvalley.oinkvalleycore.services;
 
+import com.oinkvalley.oinkvalleycore.config.BoardConfig;
 import com.oinkvalley.oinkvalleycore.db.domain.Comment;
 import com.oinkvalley.oinkvalleycore.db.domain.Post;
 import com.oinkvalley.oinkvalleycore.db.domain.User;
@@ -28,7 +29,11 @@ public class BoardService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final BoardConfig boardConfig;
 
+    public boolean isPublicBoard(String boardType) {
+        return boardConfig.getPublicBoards().contains(boardType);
+    }
 
     @Transactional
     public void createPost(String boardType, PostCreateRequest request, User user) {

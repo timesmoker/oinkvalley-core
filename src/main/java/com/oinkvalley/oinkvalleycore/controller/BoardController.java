@@ -21,17 +21,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    // 게시글 작성
-    @PostMapping(value = "/{boardType}/posts", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> createPost(
-            @PathVariable String boardType,
-            @Valid @RequestBody PostCreateRequest request,
-            @AuthenticationPrincipal User user) {
-        boardService.createPost(boardType, request, user);
-        return ResponseEntity.ok().body("게시글이 작성되었습니다.");
-    }
-
+    
     // 게시판 요약 정보 조회 --> 게시글 목록
     @GetMapping("/{boardType}/posts")
     public ResponseEntity<?> getPostSummaries(
@@ -42,6 +32,18 @@ public class BoardController {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostListResponse> postSummaries = boardService.getPostSummaries(boardType, pageable);
         return ResponseEntity.ok(postSummaries);
+    }
+
+
+    // 게시글 작성
+    @PostMapping(value = "/{boardType}/posts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> createPost(
+            @PathVariable String boardType,
+            @Valid @RequestBody PostCreateRequest request,
+            @AuthenticationPrincipal User user) {
+        boardService.createPost(boardType, request, user);
+        return ResponseEntity.ok().body("게시글이 작성되었습니다.");
     }
 
     // 게시글 상세 조회
